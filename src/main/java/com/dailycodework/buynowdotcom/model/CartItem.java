@@ -31,7 +31,7 @@ public class CartItem {
 
     public void setTotalPrice() // Method to calculate total price
     {
-        this.totalPrice = this.unitPrice.multiply(BigDecimal.valueOf(this.quantity));
+        this.totalPrice = this.unitPrice.multiply(new BigDecimal(quantity));
         // totalPrice = unitPrice * quantity
     }
 }

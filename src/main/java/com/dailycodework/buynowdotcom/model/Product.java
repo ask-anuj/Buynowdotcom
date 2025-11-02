@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-
 public class Product {
 
     @Id
