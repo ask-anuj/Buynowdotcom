@@ -10,5 +10,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Category findByName(String name);
 
-    List<CartItem> findByProductId(Long productId);
+    //List<CartItem> findByProductId(Long productId);
+
+    boolean existsByName(String name);
 }
