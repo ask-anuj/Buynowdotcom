@@ -6,6 +6,8 @@ import com.dailycodework.buynowdotcom.request.AddProductRequest;
 import com.dailycodework.buynowdotcom.request.ProductUpdateRequest;
 import com.dailycodework.buynowdotcom.response.ApiResponse;
 import com.dailycodework.buynowdotcom.service.product.IProductService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,12 +48,43 @@ public class ProductController {
         return ResponseEntity.ok(new ApiResponse("Found!", productDto));
     }
 
+//    @PostMapping("/add")
+//    public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product) {
+//        Product theProduct = productService.addProduct(product);
+//        ProductDto productDto = productService.convertToDto(theProduct);
+//        return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
+//    }
+
+//    @PostMapping("/add")
+//    public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product){
+//        try {
+//            Product theProduct = productService.addProduct(product);
+//            ProductDto productDto = productService.convertToDto(theProduct);
+//            return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
+//        }
+//    }
+
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product) {
-        Product theProduct = productService.addProduct(product);
-        ProductDto productDto = productService.convertToDto(theProduct);
-        return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
+        try {
+            Product theProduct = productService.addProduct(product);
+            ProductDto productDto = productService.convertToDto(theProduct);
+            return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
+
+        } catch (EntityExistsException e) {
+            // Handle duplicate product scenario
+            return ResponseEntity.status(CONFLICT)
+                    .body(new ApiResponse(e.getMessage(), null));
+
+        } catch (Exception e) {
+            // Catch-all for unexpected errors
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("Something went wrong: " + e.getMessage(), null));
+        }
     }
+
 
     @PutMapping("/product/{productId}/update")
     public ResponseEntity<ApiResponse> updateProduct(@RequestBody ProductUpdateRequest request, @PathVariable Long productId) {

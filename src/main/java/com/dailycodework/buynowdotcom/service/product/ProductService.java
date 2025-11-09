@@ -33,7 +33,7 @@ public class ProductService implements IProductService {
             throw new EntityExistsException(request.getName() + " Already exists"); // Checking if product already exists, throwing exception if it does
         }
         // Handling category: checking if it exists, creating and saving if it doesn't
-        // Using Optional to handle potential null values when fetching category by name
+        // Use Optional to handle potential null values when fetching category by name
         Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
                 .orElseGet(() -> {
                     Category newCategory = new Category(request.getCategory().getName());
