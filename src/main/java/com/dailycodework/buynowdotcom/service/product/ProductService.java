@@ -1,16 +1,16 @@
 package com.dailycodework.buynowdotcom.service.product;
 
 
+import com.dailycodework.buynowdotcom.dtos.ImageDto;
+import com.dailycodework.buynowdotcom.dtos.ProductDto;
 import com.dailycodework.buynowdotcom.model.*;
-import com.dailycodework.buynowdotcom.repository.CartItemRepository;
-import com.dailycodework.buynowdotcom.repository.CategoryRepository;
-import com.dailycodework.buynowdotcom.repository.OrderItemRepository;
-import com.dailycodework.buynowdotcom.repository.ProductRepository;
+import com.dailycodework.buynowdotcom.repository.*;
 import com.dailycodework.buynowdotcom.request.AddProductRequest;
 import com.dailycodework.buynowdotcom.request.ProductUpdateRequest;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,11 +24,13 @@ public class ProductService implements IProductService {
     private final CategoryRepository categoryRepository; // Injecting the CategoryRepository dependency
     private final CartItemRepository cartItemRepository; // Injecting the CartItemRepository dependency
     private final OrderItemRepository orderItemRepository; // Injecting the OrderItemRepository dependency
+    private final ImageRepository imageRepository; // Injecting the ImageRepository dependency
+    private final ModelMapper modelMapper; // Injecting the ModelMapper dependency for object mapping
 
     @Override
     public Product addProduct(AddProductRequest request) {
         if (productExists(request.getName(), request.getBrand())) {
-            throw new EntityExistsException(request.getName() + "Already exists"); // Checking if product already exists, throwing exception if it does
+            throw new EntityExistsException(request.getName() + " Already exists"); // Checking if product already exists, throwing exception if it does
         }
         // Handling category: checking if it exists, creating and saving if it doesn't
         // Using Optional to handle potential null values when fetching category by name
@@ -136,5 +138,22 @@ public class ProductService implements IProductService {
     @Override
     public List<Product> getProductsByName(String name) { // Getting products by name
         return productRepository.findByName(name); // Fetching products by name from the repository, returning as a list
+    }
+
+    @Override
+    public List<ProductDto> getConvertedProducts(List<Product> products){
+        return products.stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
+    @Override
+    public ProductDto convertToDto(Product product){
+        ProductDto productDto = modelMapper.map(product, ProductDto.class);
+        List<Image> images = imageRepository.findByProductId(product.getId());
+        List<ImageDto> imageDtos = images.stream()
+                .map(image -> modelMapper.map(image, ImageDto.class)).toList();
+        productDto.setImages(imageDtos);
+        return productDto;
     }
 }

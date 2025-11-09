@@ -5,6 +5,7 @@ import com.dailycodework.buynowdotcom.model.Image;
 import com.dailycodework.buynowdotcom.model.Product;
 import com.dailycodework.buynowdotcom.repository.ImageRepository;
 import com.dailycodework.buynowdotcom.service.product.IProductService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,66 +19,68 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ImageService implements IImageService {
-
-    private final ImageRepository imageRepository; // Repository for Image entity
-    private final IProductService productService; // Service for Product entity
+    private final ImageRepository imageRepository;
+    private final IProductService productService;
 
     @Override
-    public Image getImageById(Long imageId) { // Retrieve an image by its ID
-        return imageRepository.findById(imageId) // Find image in the repository
-                .orElseThrow(() -> new RuntimeException("Image not found")); // Throw exception if not found
+    public Image getImageById(Long imageId) {
+        return imageRepository.findById(imageId)
+                .orElseThrow(() -> new EntityNotFoundException("Image not found!"));
     }
 
     @Override
-    public void deleteImageById(Long imageId) { // Delete an image by its ID
-        imageRepository.findById(imageId).ifPresentOrElse(imageRepository::delete, () -> { // Delete if found
-            throw new RuntimeException("Image not found"); // Throw exception if not found
+    public void deleteImageById(Long imageId) {
+        imageRepository.findById(imageId).ifPresentOrElse(imageRepository::delete, () -> {
+            throw new EntityNotFoundException("Image not found!");
         });
+
     }
 
     @Override
-    public void updateImage(MultipartFile file, Long imageId) { // Update an existing image
-        Image image = getImageById(imageId); // Retrieve the image to be updated
+    public void updateImage(MultipartFile file, Long imageId) {
+        Image image = getImageById(imageId);
         try {
-            image.setFileName(file.getOriginalFilename()); // Update file name
-            image.setFileType(file.getContentType()); // Update file type
-            image.setImage(new SerialBlob(file.getBytes())); // Update image data
-            imageRepository.save(image); // Save the updated image
+            image.setFileName(file.getOriginalFilename());
+            image.setFileType(file.getContentType());
+            image.setImage(new SerialBlob(file.getBytes()));
+            imageRepository.save(image);
+
         } catch (IOException | SQLException e) {
-            throw new RuntimeException(e.getMessage()); // Handle exceptions
+            throw new RuntimeException(e.getMessage());
         }
     }
 
     @Override
-    public List<ImageDto> saveImages(Long productId, List<MultipartFile> files) { // Save multiple images for a product
-        Product product = productService.getProductById(productId); // Retrieve the associated product
+    public List<ImageDto> saveImages(Long productId, List<MultipartFile> files) {
+        Product product = productService.getProductById(productId);
 
-        List<ImageDto> savedImages = new ArrayList<>(); // List to hold saved image DTOs
-        for (MultipartFile file : files) { // Iterate over each file
+        List<ImageDto> savedImages = new ArrayList<>();
+
+        for (MultipartFile file : files) {
             try {
-                Image image = new Image(); // Create a new Image entity
-                image.setFileName(file.getOriginalFilename()); // Set file name
-                image.setFileType(file.getContentType()); // Set file type
-                image.setImage(new SerialBlob(file.getBytes())); // Set image data
-                image.setProduct(product); // Associate image with the product
+                Image image = new Image();
+                image.setFileName(file.getOriginalFilename());
+                image.setFileType(file.getContentType());
+                image.setImage(new SerialBlob(file.getBytes()));
+                image.setProduct(product);
 
-                String buildDownloaderUrl = "/api/v1/images/download/"; // Base URL for downloading images
-                String downloadUrl = buildDownloaderUrl + image.getId(); // Construct download URL
-                image.setDownloadUrl(downloadUrl); // Set download URL
-                Image savedImage = imageRepository.save(image); // Save the image entity
-                savedImage.setDownloadUrl(buildDownloaderUrl + savedImage.getId()); // Update download URL with saved image ID
-                imageRepository.save(savedImage); // Save the image entity again with updated download URL
+                String buildDownloadUrl = "/api/v1/images/image/download/";
+                String downloadUrl = buildDownloadUrl + image.getId();
+                image.setDownloadUrl(downloadUrl);
+                Image savedImage = imageRepository.save(image);
+                savedImage.setDownloadUrl(buildDownloadUrl + savedImage.getId());
+                imageRepository.save(savedImage);
 
-                ImageDto imageDto = new ImageDto(); // Create a new Image DTO
-                imageDto.setId(savedImage.getId()); // Set ID
-                imageDto.setFileName(savedImage.getFileName()); // Set file name
-                imageDto.setDownloadUrl(savedImage.getDownloadUrl()); // Set download URL
-                savedImages.add(imageDto);// Add DTO to the list
-
+                ImageDto imageDto = new ImageDto();
+                imageDto.setId(savedImage.getId());
+                imageDto.setFileName(savedImage.getFileName());
+                imageDto.setDownloadUrl(savedImage.getDownloadUrl());
+                savedImages.add(imageDto);
             } catch (IOException | SQLException e) {
-                throw new RuntimeException(e.getMessage()); // Handle exceptions
+                throw new RuntimeException(e.getMessage());
             }
         }
-        return savedImages; // Return the list of saved image DTOs
+        return savedImages;
     }
 }
+

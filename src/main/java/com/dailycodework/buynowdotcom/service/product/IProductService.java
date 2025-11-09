@@ -1,5 +1,6 @@
 package com.dailycodework.buynowdotcom.service.product;
 
+import com.dailycodework.buynowdotcom.dtos.ProductDto;
 import com.dailycodework.buynowdotcom.model.Product;
 import com.dailycodework.buynowdotcom.request.AddProductRequest;
 import com.dailycodework.buynowdotcom.request.ProductUpdateRequest;
@@ -21,4 +22,7 @@ public interface IProductService // Interface for Product Service
     List<Product> getProductsByName(String name); // Method to get products by name
 
 
+    List<ProductDto> getConvertedProducts(List<Product> products);
+
+    ProductDto convertToDto(Product product);
 }
