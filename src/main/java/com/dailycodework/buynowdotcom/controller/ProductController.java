@@ -106,4 +106,11 @@ public class ProductController {
         return ResponseEntity.ok(new ApiResponse("success", convertedProducts));
     }
 
+    @GetMapping("/products/{name}/products")
+    public ResponseEntity<ApiResponse> getProductByName(@PathVariable String name) {
+        List<Product> products = productService.getProductsByName(name);
+        List<ProductDto> convertedProducts = productService.getConvertedProducts(products);
+        return ResponseEntity.ok(new ApiResponse("success", convertedProducts));
+    }
+
 }
