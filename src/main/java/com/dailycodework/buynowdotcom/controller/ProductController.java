@@ -23,17 +23,6 @@ public class ProductController {
 
     private final IProductService productService;
 
-    //    @PostMapping("/add")
-//    public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product){
-//        try {
-//            Product theProduct = productService.addProduct(product);
-//            ProductDto productDto = productService.convertToDto(theProduct);
-//            return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
-//        } catch (EntityNotFoundException e) {
-//            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
-//        }
-//    }
-
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllProducts() {
         List<Product> products = productService.getAllProducts();
@@ -48,41 +37,11 @@ public class ProductController {
         return ResponseEntity.ok(new ApiResponse("Found!", productDto));
     }
 
-//    @PostMapping("/add")
-//    public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product) {
-//        Product theProduct = productService.addProduct(product);
-//        ProductDto productDto = productService.convertToDto(theProduct);
-//        return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
-//    }
-
-//    @PostMapping("/add")
-//    public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product){
-//        try {
-//            Product theProduct = productService.addProduct(product);
-//            ProductDto productDto = productService.convertToDto(theProduct);
-//            return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
-//        } catch (EntityNotFoundException e) {
-//            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
-//        }
-//    }
-
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product) {
-        try {
             Product theProduct = productService.addProduct(product);
             ProductDto productDto = productService.convertToDto(theProduct);
             return ResponseEntity.ok(new ApiResponse("Add product success!", productDto));
-
-        } catch (EntityExistsException e) {
-            // Handle duplicate product scenario
-            return ResponseEntity.status(CONFLICT)
-                    .body(new ApiResponse(e.getMessage(), null));
-
-        } catch (Exception e) {
-            // Catch-all for unexpected errors
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("Something went wrong: " + e.getMessage(), null));
-        }
     }
 
 
