@@ -7,20 +7,28 @@ import com.dailycodework.buynowdotcom.request.ProductUpdateRequest;
 
 import java.util.List;
 
-public interface IProductService // Interface for Product Service
-{
-    Product addProduct(AddProductRequest product); // Method to add a new product
-    Product updateProduct(ProductUpdateRequest product, Long productId); // Method to update an existing product
-    Product getProductById(Long productId); // Method to get a product by its ID
-    void deleteProductById(Long productId); // Method to delete a product by its ID
+public interface IProductService {
+    Product addProduct(AddProductRequest product);
 
-    List<Product> getAllProducts(); // Method to get all products
-    List<Product> getProductsByCategoryAndBrand(String category, String brand); // Method to get products by category and brand
-    List<Product> getProductsByCategory(String category); // Method to get products by category
-    List<Product> getProductsByBrandAndName(String brand, String name); // Method to get products by brand and name
-    List<Product> getProductsByBrand(String brand); // Method to get products by brand
-    List<Product> getProductsByName(String name); // Method to get products by name
+    Product updateProduct(ProductUpdateRequest product, Long productId);
 
+    Product getProductById(Long productId);
+
+    void deleteProductById(Long productId);
+
+    List<Product> getAllProducts();
+
+    List<Product> getProductsByCategoryAndBrand(String category, String brand);
+
+    List<Product> getProductsByCategory(String category);
+
+    List<Product> getProductsByBrandAndName(String brand, String name);
+
+    List<Product> getProductsByBrand(String brand);
+
+    List<Product> getProductsByName(String name);
+
+    List<Product> findDistinctProductsByName();
 
     List<ProductDto> getConvertedProducts(List<Product> products);
 

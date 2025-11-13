@@ -18,39 +18,30 @@ import java.util.List;
 @Entity
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment strategy
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
     private String firstName;
     private String lastName;
 
-    @NaturalId // Ensures email is unique and can be used for lookups
+    @NaturalId
     private String email;
     private String password;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)// One-to-one relationship with Cart
-    // cascade = CascadeType.ALL to propagate all operations (persist, merge, remove, etc.) to the Cart entity
-    // orphanRemoval = true to automatically delete the Cart when the User is deleted
-    // mappedBy = "user" indicates that the Cart entity owns the relationship
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)// One-to-many relationship with Order
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
-    //private List<Role> roles;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade =
-            {CascadeType.DETACH, // Ensures that the Role entity is not removed when a User is deleted
-                    CascadeType.MERGE, // allows merging of detached Role entities
-                    CascadeType.PERSIST, // allows persisting of new Role entities
-                    CascadeType.REFRESH} // ensures that the Role entity is refreshed when the User entity is refreshed
-    ) // Many-to-many relationship with Role
+            {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 
-    @JoinTable(
-            name = "user_roles", // Join table name
-            joinColumns = @JoinColumn(name = "user_id"), // Foreign key column for User
-            inverseJoinColumns = @JoinColumn(name = "role_id", // Foreign key column for Role
-                    referencedColumnName = "id") // References the primary key column of the Role entity
-    )// Foreign key column for Role
-
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id",
+                    referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id",
+                    referencedColumnName = "id")
+    )
     private Collection<Role> roles = new HashSet<>();
 }

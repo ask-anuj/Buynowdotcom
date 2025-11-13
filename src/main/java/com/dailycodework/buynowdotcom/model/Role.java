@@ -8,10 +8,10 @@ import lombok.Setter;
 import java.util.Collection;
 import java.util.HashSet;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class Role {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Collection<User> users = new HashSet<>(); // Initialize to avoid null pointer exceptions
+    private Collection<User> users = new HashSet<>();
 
     public Role(String name) {
         this.name = name;

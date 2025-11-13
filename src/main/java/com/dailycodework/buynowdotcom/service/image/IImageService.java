@@ -1,5 +1,4 @@
 package com.dailycodework.buynowdotcom.service.image;
-
 import com.dailycodework.buynowdotcom.dtos.ImageDto;
 import com.dailycodework.buynowdotcom.model.Image;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,4 +10,5 @@ public interface IImageService {
     void deleteImageById(Long imageId);
     void updateImage(MultipartFile file, Long imageId);
     List<ImageDto> saveImages(Long productId, List<MultipartFile> files);
+
 }

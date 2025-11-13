@@ -18,11 +18,10 @@ public class Category {
     private Long id;
     private String name;
 
-    @JsonIgnore // To prevent circular references during serialization
+    @JsonIgnore
     @OneToMany(mappedBy = "category")
     private List<Product> products;
-
     public Category(String name) {
-        this.name = name; // include only name in constructor because id is auto-generated
+        this.name = name;
     }
 }

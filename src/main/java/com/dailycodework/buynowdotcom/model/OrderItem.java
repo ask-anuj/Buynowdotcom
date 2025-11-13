@@ -1,7 +1,6 @@
 package com.dailycodework.buynowdotcom.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +11,6 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @Entity
-
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,14 +24,12 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private Product product;
+    private  Product product;
 
-    // Constructor without id, as it is auto-generated
-    public OrderItem(int quantity, BigDecimal price, Order order, Product product) {
-        this.quantity = quantity;
-        this.price = price;
+    public OrderItem(Order order, Product product, BigDecimal price, int quantity) {
         this.order = order;
         this.product = product;
+        this.price = price;
+        this.quantity = quantity;
     }
-
 }

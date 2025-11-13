@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class CartItem {
     @Id
@@ -21,17 +21,22 @@ public class CartItem {
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "product_id")
-    private Product product; // Many-to-one relationship with Product
+    private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
-    private Cart cart; // Many-to-one relationship with Cart
+    private Cart cart;
 
-    public void setTotalPrice() // Method to calculate total price
-    {
-        this.totalPrice = this.unitPrice.multiply(new BigDecimal(quantity));
-        // totalPrice = unitPrice * quantity
+    //    public  void setTotalPrice(){
+//        this.totalPrice = this.unitPrice.multiply(new BigDecimal(quantity));
+//    }
+    public void setTotalPrice() {
+        if (this.unitPrice == null) {
+            throw new IllegalStateException("Unit price cannot be null while calculating total price");
+        }
+        this.totalPrice = this.unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
+
 }

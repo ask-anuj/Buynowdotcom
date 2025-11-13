@@ -5,8 +5,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Data // Using @Data for getter, setter, toString, equals, and hashCode, etc.
-public class ProductUpdateRequest { // Class for Product Update Request
+@Data
+public class ProductUpdateRequest {
     private Long id;
     private String name;
     private String brand;

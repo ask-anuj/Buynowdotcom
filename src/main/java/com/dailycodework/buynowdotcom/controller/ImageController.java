@@ -4,9 +4,9 @@ import com.dailycodework.buynowdotcom.dtos.ImageDto;
 import com.dailycodework.buynowdotcom.model.Image;
 import com.dailycodework.buynowdotcom.response.ApiResponse;
 import com.dailycodework.buynowdotcom.service.image.IImageService;
-import org.springframework.core.io.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -55,39 +55,3 @@ public class ImageController {
         return ResponseEntity.ok(new ApiResponse("Delete Image success!", null));
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

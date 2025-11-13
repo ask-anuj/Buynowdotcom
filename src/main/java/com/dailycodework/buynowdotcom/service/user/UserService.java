@@ -1,5 +1,6 @@
 package com.dailycodework.buynowdotcom.service.user;
 
+import com.dailycodework.buynowdotcom.dtos.UserDto;
 import com.dailycodework.buynowdotcom.model.User;
 import com.dailycodework.buynowdotcom.repository.UserRepository;
 import com.dailycodework.buynowdotcom.request.CreateUserRequest;
@@ -7,6 +8,10 @@ import com.dailycodework.buynowdotcom.request.UserUpdateRequest;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,8 +19,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService {
-
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User createUser(CreateUserRequest request) {
@@ -23,22 +29,21 @@ public class UserService implements IUserService {
                 .filter(user -> !userRepository.existsByEmail(request.getEmail()))
                 .map(req -> {
                     User user = new User();
-                    user.setFirstName(req.getFirstName());
-                    user.setLastName(req.getLastName());
-                    user.setEmail(req.getEmail());
-                    user.setPassword(req.getPassword());
+                    user.setFirstName(request.getFirstName());
+                    user.setLastName(request.getLastName());
+                    user.setEmail(request.getEmail());
+                    user.setPassword(passwordEncoder.encode(request.getPassword()));
                     return userRepository.save(user);
-                }).orElseThrow(() -> new EntityExistsException("Oops!" + request.getEmail() + " already exists."));
+                }).orElseThrow(() -> new EntityExistsException("Oops! " + request.getEmail() + " already exists!"));
     }
 
     @Override
     public User updateUser(UserUpdateRequest request, Long userId) {
         return userRepository.findById(userId).map(existingUser -> {
-            ;
             existingUser.setFirstName(request.getFirstName());
             existingUser.setLastName(request.getLastName());
             return userRepository.save(existingUser);
-        }).orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        }).orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
     @Override
@@ -52,5 +57,17 @@ public class UserService implements IUserService {
         userRepository.findById(userId).ifPresentOrElse(userRepository::delete, () -> {
             throw new EntityNotFoundException("User not found!");
         });
+    }
+    @Override
+    public UserDto convertUserToDto(User user) {
+        return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public User getAuthenticatedUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return Optional.ofNullable(userRepository.findByEmail(email))
+                .orElseThrow(() -> new EntityNotFoundException("Log in required!"));
     }
 }
